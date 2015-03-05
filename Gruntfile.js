@@ -144,12 +144,4 @@ module.exports = function(grunt) {
       grunt.task.run([ 'server-dev' ]);
     }
   });
-
-  // grunt.registerTask('deploy', [
-  //   // add your deploy tasks here
-  //   'build',
-
-  // ]);
-
-
 };
