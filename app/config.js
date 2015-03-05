@@ -1,45 +1,50 @@
-var Bookshelf = require('bookshelf');
+var db = require('mongoose');
 var path = require('path');
+var crypto = require('crypto');
+var bcrypt = require('bcrypt-nodejs');
 
-var db = Bookshelf.initialize({
-  client: 'sqlite3',
-  connection: {
-    host: '127.0.0.1',
-    user: 'your_database_user',
-    password: 'password',
-    database: 'shortlydb',
-    charset: 'utf8',
-    filename: path.join(__dirname, '../db/shortly.sqlite')
-  }
+dbURI = process.env.dbURI || 'mongodb://localhost:27017';
+
+db.connect(dbURI);
+
+var Urls = db.schema({
+  id: ObjectID,
+  url: String,
+  base_url: String,
+  code: {type: String, default: getShortCode.bind(this)},
+  title: String,
+  visits: {type: Number, default: 0}
+
 });
 
-db.knex.schema.hasTable('urls').then(function(exists) {
-  if (!exists) {
-    db.knex.schema.createTable('urls', function (link) {
-      link.increments('id').primary();
-      link.string('url', 255);
-      link.string('base_url', 255);
-      link.string('code', 100);
-      link.string('title', 255);
-      link.integer('visits');
-      link.timestamps();
-    }).then(function (table) {
-      console.log('Created Table', table);
-    });
-  }
+var getShortCode = function(){
+  var shasum = crypto.createHash('sha1');
+  shasum.update(this.url);
+  return shasum.digest('hex').slice(0, 5);
+};
+
+
+var Users = db.schema({
+  id: ObjectID,
+  username: String,
+  saltHash: String,
 });
 
-db.knex.schema.hasTable('users').then(function(exists) {
-  if (!exists) {
-    db.knex.schema.createTable('users', function (user) {
-      user.increments('id').primary();
-      user.string('username', 100).unique();
-      user.string('password', 100);
-      user.timestamps();
-    }).then(function (table) {
-      console.log('Created Table', table);
-    });
-  }
+Users.virtual('password').set(function(password) {
+  this.saltHash = bcyrpt.hashSync(password);
 });
 
-module.exports = db;
+Users.methods.comparePassword = function(password, cb){
+  bcrypt.compare(password, this.saltHash, function(err, isMatch) {
+    if (err){
+      console.error(err);
+    }
+    cb(isMatch);
+  });
+};
+
+
+
+module.exports.db = db;
+module.exports.users = Users;
+module.exports.urls = Urls;

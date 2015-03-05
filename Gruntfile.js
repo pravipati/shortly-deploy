@@ -111,7 +111,7 @@ module.exports = function(grunt) {
     nodemon.stdout.pipe(process.stdout);
     nodemon.stderr.pipe(process.stderr);
 
-    grunt.task.run([ 'watch' ]);
+    grunt.task.run([ 'build', 'watch' ]);
   });
 
   // Running shell commands in a different process and displaying output on the main console
