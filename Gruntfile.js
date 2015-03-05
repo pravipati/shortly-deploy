@@ -71,7 +71,7 @@ module.exports = function(grunt) {
           'public/lib/**/*.js',
         ],
         tasks: [
-          'build'
+          'jshint', 'build', 'test'
         ]
       },
       css: {
@@ -133,7 +133,7 @@ module.exports = function(grunt) {
     'mochaTest'
   ]);
 
-  grunt.registerTask('build', ['test', 'jshint', 'concat', 'uglify'
+  grunt.registerTask('build', ['concat', 'uglify'
   ]);
 
   grunt.registerTask('deploy', function(n) {
