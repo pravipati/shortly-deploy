@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         separator: ';'
       },
       dist: {
-        src: ['public/client/*.js','public/lib/*.js' ],
+        src: ['public/lib/jquery.js', 'public/lib/handlebars.js', 'public/lib/underscore.js', 'public/lib/backbone.js', 'public/client/*.js'],
         dest: 'public/dist/built.js',
       }
     },
@@ -29,6 +29,12 @@ module.exports = function(grunt) {
 
     uglify: {
       my_target: {
+        options: {
+          mangle: {
+            except: ['Backbone','jQuery','_','Handlebars']
+          }
+        },
+
       files: {
         'public/dist/output.min.js': 'public/dist/built.js'
       }
