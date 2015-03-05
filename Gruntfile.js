@@ -7,8 +7,12 @@ module.exports = function(grunt) {
         separator: ';'
       },
       dist: {
-        src: ['public/lib/jquery.js', 'public/lib/handlebars.js', 'public/lib/underscore.js', 'public/lib/backbone.js', 'public/client/*.js'],
-        dest: 'public/dist/built.js',
+        src: ['public/client/*.js'],
+        dest: 'public/dist/built.js'
+      },
+      libs: {
+        src: ['public/lib/jquery.js','public/lib/handlebars.js', 'public/lib/underscore.js', 'public/lib/backbone.js'],
+        dest: 'public/dist/libs.js'
       }
     },
 
@@ -31,12 +35,14 @@ module.exports = function(grunt) {
       my_target: {
         options: {
           mangle: {
-            except: ['Backbone','jQuery','_','Handlebars']
+            // mangle:
+            //except: ['Backbone','jQuery', '$', 'Templates', '_','Handlebars']
           }
         },
 
       files: {
-        'public/dist/output.min.js': 'public/dist/built.js'
+        'public/dist/output.min.js': 'public/dist/built.js',
+        'public/dist/libs.min.js': 'public/dist/libs.js'
       }
     }
     },
