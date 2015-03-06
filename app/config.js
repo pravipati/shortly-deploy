@@ -7,31 +7,29 @@ dbURI = process.env.dbURI || 'mongodb://localhost:27017';
 
 db.connect(dbURI);
 
-var Urls = db.schema({
-  id: ObjectID,
-  url: String,
-  base_url: String,
-  code: {type: String, default: getShortCode.bind(this)},
-  title: String,
-  visits: {type: Number, default: 0}
-
-});
-
-var getShortCode = function(){
+var getShortCode = function(url){
   var shasum = crypto.createHash('sha1');
-  shasum.update(this.url);
+  shasum.update(url);
   return shasum.digest('hex').slice(0, 5);
 };
 
+var Urls = db.Schema({
+  url: String,
+  base_url: String,
+  code: {type: String, set: getShortCode},
+  title: String,
+  visits: {type: Number, default: 0}
+});
 
-var Users = db.schema({
-  id: ObjectID,
+
+
+var Users = db.Schema({
   username: String,
   saltHash: String,
 });
 
 Users.virtual('password').set(function(password) {
-  this.saltHash = bcyrpt.hashSync(password);
+  this.saltHash = bcrypt.hashSync(password);
 });
 
 Users.methods.comparePassword = function(password, cb){
